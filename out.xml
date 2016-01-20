@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<books>
+	
+	
+	
+	
+	
+	
+	
+	
+		<hall number="h1">
+<author title="title 1" name="">
+</author>
+<author title="title 2" name="">
+</author>
+<author title="title 4" name="">
+</author>
+</hall>
+		<hall number="h2">
+<author title="title 3" name="">
+</author>
+<author title="title 5" name="">
+</author>
+</hall>
+		<hall number="h3">
+<author title="title 6" name="">
+</author>
+</hall>
+	
+</books>
