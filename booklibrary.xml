@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE books SYSTEM "booklibrary.dtd">
+<books>
+	<item author="a1" title="title 1" hall="h1" />
+	<item author="a1" title="title 2" hall="h1" />
+	<item author="a1" title="title 3" hall="h2" />
+	<item author="a2" title="title 4" hall="h1" />
+	<item author="a2" title="title 5" hall="h2" />
+	<item author="a3" title="title 6" hall="h3" />
+	<authors>
+		<author id="a1" name="Author 1" />
+		<author id="a2" name="Author 2" />
+		<author id="a3" name="Author 3" />
+	</authors>
+	<halls>
+		<hall number="h1" />
+		<hall number="h2" />
+		<hall number="h3" />
+	</halls>
+</books>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Validate Xml with DTD</title>
+	<script>
+	var xmlDoc;
+	var xmlhttp;
+	var isIE;
+	var isFirefox;
+	
+	function detectBrowser() {
+		isIE = /*@cc_on!@*/false || !!document.documentMode; // At least IE6
+		isFirefox = typeof InstallTrigger !== 'undefined';   // Firefox 1.0+
+		
+		if (isIE || isFirefox) {
+			document.getElementById("statusOnPage").innerHTML += "\nSupported browser\n";
+		} else {
+			document.getElementById("statusOnPage").innerHTML += "\nUnsupported browser\n";
+		}
+	}
+	
+	function readyStateHandler()
+	{
+		if (xmlhttp.readyState == 4) {	
+			document.getElementById("statusOnPage").innerHTML += "Parsing document...\n";
+			
+			if (isIE) {			
+				if(xmlhttp.parseError.errorCode != 0){
+					document.getElementById("statusOnPage").innerHTML += "Error on parse\n";
+				}
+				else {
+					xmlDoc = xmlhttp;
+					document.getElementById("statusOnPage").innerHTML += "Document is valid!\n";
+					document.getElementById("statusOnPage").innerHTML += "First child node value = \"" + xmlDoc.firstChild.nodeValue + "\"\n";
+				}
+			}
+			else if (isFirefox) {
+				if (xmlhttp.status == 200) {
+					xmlDoc = xmlhttp.responseXML
+					document.getElementById("statusOnPage").innerHTML += "Document is valid!\n";
+					document.getElementById("statusOnPage").innerHTML += "First child node value = \"" + xmlDoc.firstChild.nodeValue + "\"\n";
+				} else {
+					document.getElementById("statusOnPage").innerHTML += "Error on parse\n";
+				}
+			}
+			
+		}
+	}
+	function loadXML()
+	{
+		if (isIE ) {
+			xmlhttp = new ActiveXObject("MSXML.DomDocument");
+			xmlhttp.async = true;
+			xmlhttp.validateOnParse = true;			
+		}
+		else if (isFirefox) {
+			xmlhttp = new XMLHttpRequest();						
+		} else {
+			return;
+		}
+		
+		document.getElementById("statusOnPage").innerHTML += "\nLoading document...\n";
+		
+		xmlhttp.onreadystatechange = readyStateHandler;
+		
+		if (isIE) {
+			 xmlhttp.load("booklibrary.xml");;
+		} else if (isFirefox) {
+			xmlhttp.open("GET", "booklibrary.xml", true);
+			xmlhttp.send();
+		}
+	}
+	function createNewXMLWithDOM()
+	{	
+		/*
+		<!DOCTYPE books [
+			<!ELEMENT books (hall*)>
+			<!ELEMENT hall (author*)>
+			<!ELEMENT author EMPTY>
+			<!ATTLIST hall
+				number CDATA #REQUIRED
+			>
+			<!ATTLIST author
+				title CDATA #REQUIRED
+				name CDATA #REQUIRED
+			>
+		]>
+		<books>
+			<hall number="h1">
+				<author title="title 1" name="Author 1"/>
+				<author title="title 2" name="Author 1"/>
+				<author title="title 4" name="Author 2"/>
+			</hall>
+			<hall number="h2">
+				<author title="title 3" name="Author 1"/>
+				<author title="title 5" name="Author 2"/>
+			</hall>
+			<hall number="h3">
+				<author title="title 6" name="Author 3"/>
+			</hall>
+		</books>
+		*/
+		var xmlNEW;
+		if (isIE) {
+			xmlNEW = new ActiveXObject("MSXML2.DOMDocument.6.0");
+		} else if (isFirefox) {
+			xmlNEW = document.implementation.createDocument(null, "books");
+		} else {
+			return;
+		}
+		
+		document.getElementById("statusOnPage").innerHTML += "\nCreating new XML document with DOM...\n";
+		
+		var PI = xmlNEW.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"utf-8\"");		
+		
+		var booksRoot;
+		
+		if (isIE) {			
+			booksRoot = xmlNEW.createElement("books");
+			xmlNEW.appendChild(booksRoot);
+		} else if (isFirefox) {
+			booksRoot = xmlNEW.documentElement
+		}
+		
+		var newLine = xmlNEW.createTextNode("\n");
+		//var newTabbedLine = xmlNEW.createTextNode("\r\n\t");
+		
+		// store collections
+		var itemList = xmlDoc.getElementsByTagName("item");
+		var authorList = xmlDoc.getElementsByTagName("author");		
+		var hallList = xmlDoc.getElementsByTagName("hall");
+		
+		
+		for (var i = 0; i < hallList.length; i++) {
+			var oldHallItem = hallList.item(i);
+			var hallNumber = oldHallItem.getAttribute("number");
+			
+			var hall = xmlNEW.createElement("hall");
+			hall.setAttribute("number", hallNumber);
+			
+			for (var j = 0; j < itemList.length; j++) {
+				var item =  itemList.item(j);
+				if (item.getAttribute("hall") != hallNumber) {
+					continue;
+				}
+				
+				// == hallNumber
+				
+				var title = item.getAttribute("title");
+				var authorId = item.getAttribute("author");
+				
+				var authorNode;
+				for (var k = 0; k < authorList.length; k++) {
+					authorNode = authorList.item(k);
+					if (authorNode.getAttribute("id") == authorId) {
+						break;
+					}
+				}
+				
+				var authorName = authorNode.getAttribute("name");
+				
+				var newAuthor = xmlNEW.createElement("author");
+				newAuthor.setAttribute("title", title);
+				newAuthor.setAttribute("name", authorName);
+				
+				hall.appendChild(newLine);
+				hall.appendChild(newAuthor);				
+			}
+			
+			booksRoot.appendChild(newLine);
+			booksRoot.appendChild(hall);
+		}
+		
+		xmlNEW.insertBefore(PI, booksRoot);
+		
+		if (isIE) {			
+			document.getElementById("newXMLWithDOM").value = xmlNEW.xml;
+		} else if (isFirefox) {
+			var serializer = new XMLSerializer();
+            var s = serializer.serializeToString(xmlNEW);
+			document.getElementById("newXMLWithDOM").value = s;
+		}
+		
+	}
+	</script>
+</head>
+<body onload="detectBrowser(); loadXML(); document.getElementById('newXMLWithDOM').value = '';">
+	<button onclick="createNewXMLWithDOM()">Create new XML with DOM</button>
+	<pre>new XML with DOM:</pre>
+	<textarea id="newXMLWithDOM" rows="7" cols="100"></textarea>
+	<pre id="statusOnPage">Status:</pre>
+</body>
+</html>

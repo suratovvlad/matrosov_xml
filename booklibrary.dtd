@@ -1,0 +1,18 @@
+<!ELEMENT books (item*,authors,halls)>
+<!ELEMENT item EMPTY>
+<!ATTLIST item
+	author IDREF #REQUIRED
+	title CDATA #REQUIRED
+	hall IDREF #REQUIRED
+>
+<!ELEMENT authors (author*)>
+<!ELEMENT halls (hall*)>
+<!ELEMENT author EMPTY>
+<!ELEMENT hall EMPTY>
+<!ATTLIST author
+	id ID #REQUIRED
+	name CDATA #REQUIRED
+>
+<!ATTLIST hall
+	number ID #REQUIRED
+>
