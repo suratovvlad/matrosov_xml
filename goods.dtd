@@ -1,0 +1,18 @@
+<!ELEMENT goods (item*,materials,company*)>
+<!ELEMENT item EMPTY>
+<!ATTLIST item
+	material IDREF #REQUIRED
+	company IDREF #REQUIRED
+	name CDATA #REQUIRED
+>
+<!ELEMENT materials (material*)>
+<!ELEMENT material EMPTY>
+<!ATTLIST material
+	id ID #REQUIRED
+	name CDATA #REQUIRED
+>
+<!ELEMENT company EMPTY>
+<!ATTLIST company
+	id ID #REQUIRED
+	name CDATA #REQUIRED
+	>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<goods>
+	
+	
+	
+	
+	
+		
+	
+		<items material="Wood">
+<company name="table" item="Company 1">
+</company>
+<company name="chair" item="Company 2">
+</company>
+</items>
+		<items material="Iron">
+<company name="door" item="Company 1">
+</company>
+</items>
+		<items material="Glass">
+<company name="cup" item="Company 3">
+</company>
+<company name="table" item="Company 1">
+</company>
+<company name="door" item="Company 2">
+</company>
+</items>
+	
+	
+	
+	
+</goods>
