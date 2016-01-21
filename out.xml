@@ -9,21 +9,21 @@
 	
 	
 		<hall number="h1">
-<author title="title 1" name="">
+<author title="title 1" name="Author 1">
 </author>
-<author title="title 2" name="">
+<author title="title 2" name="Author 1">
 </author>
-<author title="title 4" name="">
+<author title="title 4" name="Author 2">
 </author>
 </hall>
 		<hall number="h2">
-<author title="title 3" name="">
+<author title="title 3" name="Author 1">
 </author>
-<author title="title 5" name="">
+<author title="title 5" name="Author 2">
 </author>
 </hall>
 		<hall number="h3">
-<author title="title 6" name="">
+<author title="title 6" name="Author 3">
 </author>
 </hall>
 	

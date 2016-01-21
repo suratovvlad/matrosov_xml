@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:output method="xml" encoding="utf-8" indent="yes"/>
-	<!--<xsl:key name="AUTHOR_ID" match="author" use="@id" />-->
 	<xsl:template match="books">
 		<xsl:copy>
 			<xsl:apply-templates/>
@@ -24,20 +23,18 @@
 						<xsl:value-of select="@title"/>
 					</xsl:attribute>
 					
-					<xsl:variable name="author_id" select="@id"/>
+					<xsl:variable name="author_id" select="@author"/>
 					
-					<xsl:attribute name="name">
-						<xsl:copy>
-						<xsl:for-each select="//authors/author[@id = $author_id]">
-							<xsl:value-of select="//authors/author/@name"/>
-						</xsl:for-each>
-						</xsl:copy>
-					</xsl:attribute>
-					
+					<xsl:for-each select="//authors/author">
+						<xsl:if test="@id = $author_id">				
+							<xsl:attribute name="name">
+								<xsl:value-of select="@name"/>
+							</xsl:attribute>
+						</xsl:if>
+					</xsl:for-each>
 					
 				</xsl:element>
 			</xsl:for-each>
 		</xsl:element>
 	</xsl:template>
-	
 </xsl:stylesheet>
