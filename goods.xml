@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE goods SYSTEM "goods.dtd" >
+<goods>
+	<item material="m1" name="table" company="c1"/>
+	<item material="m1" name="chair" company="c2" />
+	<item material="m2" name="door" company="c1" />
+	<item material="m3" name="cup" company="c3" />
+	<item material="m3" name="table" company="c1" />
+	<item material="m3" name="door" company="c2" />	
+	<materials>
+		<material id="m1" name="Wood"/>
+		<material id="m2" name="Iron"/>
+		<material id="m3" name="Glass"/>
+	</materials>
+	<company id="c1" name="Company 1"/>
+	<company id="c2" name="Company 2"/>
+	<company id="c3" name="Company 3"/>
+</goods>
+	

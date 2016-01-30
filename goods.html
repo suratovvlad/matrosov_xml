@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Validate Xml with DTD</title>
+	<script>
+	var xmlDoc;
+	var xmlhttp;
+	var isIE;
+	var isFirefox;
+	
+	function detectBrowser() {
+		isIE = /*@cc_on!@*/false || !!document.documentMode; // At least IE6
+		isFirefox = typeof InstallTrigger !== 'undefined';   // Firefox 1.0+
+		
+		if (isIE || isFirefox) {
+			document.getElementById("statusOnPage").innerHTML += "\nSupported browser\n";
+		} else {
+			document.getElementById("statusOnPage").innerHTML += "\nUnsupported browser\n";
+		}
+	}
+	
+	function readyStateHandler()
+	{
+		if (xmlhttp.readyState == 4) {	
+			document.getElementById("statusOnPage").innerHTML += "Parsing document...\n";
+			
+			if (isIE) {			
+				if(xmlhttp.parseError.errorCode != 0){
+					document.getElementById("statusOnPage").innerHTML += "Error on parse\n";
+				}
+				else {
+					xmlDoc = xmlhttp;
+					document.getElementById("statusOnPage").innerHTML += "Document is valid!\n";
+					document.getElementById("statusOnPage").innerHTML += "First child node value = \"" + xmlDoc.firstChild.nodeValue + "\"\n";
+				}
+			}
+			else if (isFirefox) {
+				if (xmlhttp.status == 200) {
+					xmlDoc = xmlhttp.responseXML
+					document.getElementById("statusOnPage").innerHTML += "Document is valid!\n";
+					document.getElementById("statusOnPage").innerHTML += "First child node value = \"" + xmlDoc.firstChild.nodeValue + "\"\n";
+				} else {
+					document.getElementById("statusOnPage").innerHTML += "Error on parse\n";
+				}
+			}
+			
+		}
+	}
+	function loadXML()
+	{
+		if (isIE ) {
+			xmlhttp = new ActiveXObject("MSXML.DomDocument");
+			xmlhttp.async = true;
+			xmlhttp.validateOnParse = true;			
+		}
+		else if (isFirefox) {
+			xmlhttp = new XMLHttpRequest();						
+		} else {
+			return;
+		}
+		
+		document.getElementById("statusOnPage").innerHTML += "\nLoading document...\n";
+		
+		xmlhttp.onreadystatechange = readyStateHandler;
+		
+		if (isIE) {
+			 xmlhttp.load("goods.xml");;
+		} else if (isFirefox) {
+			xmlhttp.open("GET", "goods.xml", true);
+			xmlhttp.send();
+		}
+	}
+	function createNewXMLWithDOM()
+	{	
+		/*
+		<!DOCTYPE goods [
+			<!ELEMENT goods (items*)>
+			<!ELEMENT items (company*)>
+			<!ELEMENT company EMPTY>
+			<!ATTLIST items
+				material CDATA #REQUIRED
+			>
+			<!ATTLIST company
+				name CDATA #REQUIRED
+				item CDATA #REQUIRED
+			>
+		]>
+		<goods>
+			<items material="Wood">
+				<company name="table" name="Company 1"/>
+				<company name="chair" name="Company 2"/>
+			</items>
+			<items material="Iron">
+				<company title="door" name="Company 1"/>
+			</items>
+			<items material="Glass">
+				<company title="cup" name="Company 3"/>
+				<company name="table" name="Company 1"/>
+				<company title="door" name="Company 2"/>
+			</items>
+		</goods>
+		*/
+		var xmlNEW;
+		if (isIE) {
+			xmlNEW = new ActiveXObject("MSXML2.DOMDocument.6.0");
+		} else if (isFirefox) {
+			xmlNEW = document.implementation.createDocument(null, "goods");
+		} else {
+			return;
+		}
+		
+		document.getElementById("statusOnPage").innerHTML += "\nCreating new XML document with DOM...\n";
+		
+		var PI = xmlNEW.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"utf-8\"");		
+		
+		var goodsRoot;
+		
+		if (isIE) {			
+			goodsRoot = xmlNEW.createElement("goods");
+			xmlNEW.appendChild(goodsRoot);
+		} else if (isFirefox) {
+			goodsRoot = xmlNEW.documentElement
+		}
+		
+		var newLine = xmlNEW.createTextNode("\n");
+		//var newTabbedLine = xmlNEW.createTextNode("\r\n\t");
+		
+		// store collections
+		var itemList = xmlDoc.getElementsByTagName("item");
+		var materialList = xmlDoc.getElementsByTagName("material");		
+		var companyList = xmlDoc.getElementsByTagName("company");
+		
+		
+		for (var i = 0; i < materialList.length; i++) {
+			var oldMaterialItem = materialList.item(i);
+			var materialId = oldMaterialItem.getAttribute("id");
+			var materialName = oldMaterialItem.getAttribute("name");
+			
+			var newItems = xmlNEW.createElement("items");
+			newItems.setAttribute("material", materialName);
+			
+			for (var j = 0; j < itemList.length; j++) {
+				var item =  itemList.item(j);
+				if (item.getAttribute("material") != materialId) {
+					continue;
+				}
+				
+				// == materialId
+				
+				var productName = item.getAttribute("name");
+				var companyId = item.getAttribute("company");
+				
+				var companyNode;
+				for (var k = 0; k < companyList.length; k++) {
+					companyNode = companyList.item(k);
+					if (companyNode.getAttribute("id") == companyId) {
+						break;
+					}
+				}
+				
+				var companyName = companyNode.getAttribute("name");
+				
+				var newCompany = xmlNEW.createElement("company");
+				newCompany.setAttribute("name", productName);
+				newCompany.setAttribute("item", companyName);
+				
+				newItems.appendChild(newLine);
+				newItems.appendChild(newCompany);				
+			}
+			
+			goodsRoot.appendChild(newLine);
+			goodsRoot.appendChild(newItems);
+		}
+		
+		xmlNEW.insertBefore(PI, goodsRoot);
+		
+		if (isIE) {			
+			document.getElementById("newXMLWithDOM").value = xmlNEW.xml;
+		} else if (isFirefox) {
+			var serializer = new XMLSerializer();
+            var s = serializer.serializeToString(xmlNEW);
+			document.getElementById("newXMLWithDOM").value = s;
+		}
+		
+	}
+	</script>
+</head>
+<body onload="detectBrowser(); loadXML(); document.getElementById('newXMLWithDOM').value = '';">
+	<button onclick="createNewXMLWithDOM()">Create new XML with DOM</button>
+	<pre>new XML with DOM:</pre>
+	<textarea id="newXMLWithDOM" rows="7" cols="100"></textarea>
+	<pre id="statusOnPage">Status:</pre>
+</body>
+</html>
